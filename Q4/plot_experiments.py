@@ -19,7 +19,7 @@ def plot_reducer_experiment(csv_file='reducer_experiment_results.csv', output_fi
         print(f"Error: {csv_file} not found!")
         return False
     
-    df = pd.read_csv(csv_file, names=['num_reducers', 'time_seconds'])
+    df = pd.read_csv(csv_file)
     df = df.sort_values('num_reducers')
     
     plt.figure(figsize=(12, 7))
@@ -72,7 +72,7 @@ def plot_slowstart_experiment(csv_file='slowstart_experiment_results.csv', outpu
         print(f"Error: {csv_file} not found!")
         return False
     
-    df = pd.read_csv(csv_file, names=['slowstart_fraction', 'time_seconds'])
+    df = pd.read_csv(csv_file)
     df = df.sort_values('slowstart_fraction')
     
     plt.figure(figsize=(12, 7))
@@ -128,7 +128,7 @@ def print_summary(reducer_csv='reducer_experiment_results.csv',
     print("="*60)
     
     if os.path.exists(reducer_csv):
-        df_red = pd.read_csv(reducer_csv, names=['num_reducers', 'time_seconds'])
+        df_red = pd.read_csv(reducer_csv)
         print("\n📊 Reducer Experiment:")
         print(f"   Configurations tested: {len(df_red)}")
         print(f"   Fastest: {df_red['time_seconds'].min():.0f}s with {int(df_red.loc[df_red['time_seconds'].idxmin(), 'num_reducers'])} reducers")
@@ -136,7 +136,7 @@ def print_summary(reducer_csv='reducer_experiment_results.csv',
         print(f"   Range: {df_red['time_seconds'].max() - df_red['time_seconds'].min():.0f}s difference")
     
     if os.path.exists(slowstart_csv):
-        df_slow = pd.read_csv(slowstart_csv, names=['slowstart_fraction', 'time_seconds'])
+        df_slow = pd.read_csv(slowstart_csv)
         print("\n📊 Slow Start Experiment:")
         print(f"   Configurations tested: {len(df_slow)}")
         print(f"   Fastest: {df_slow['time_seconds'].min():.0f}s with slowstart={df_slow.loc[df_slow['time_seconds'].idxmin(), 'slowstart_fraction']}")

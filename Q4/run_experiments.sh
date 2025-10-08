@@ -21,7 +21,7 @@ echo "slowstart_fraction,time_seconds" > slowstart_experiment_results.csv
 echo "Experiment 1: Varying Number of Reducers"
 echo "=========================================="
 
-for NUM_REDUCERS in 1 2 4 6 8 12 16 24; do
+for NUM_REDUCERS in 6 8 12 16; do
     echo "Testing with ${NUM_REDUCERS} reducers..."
     
     # Clean output
@@ -49,7 +49,7 @@ echo ""
 echo "Experiment 2: Varying Slow Start Parameter"
 echo "=========================================="
 
-for SLOWSTART in 0.05 0.25 0.50 0.75 0.80 0.95; do
+for SLOWSTART in 0.25 0.50 0.75 0.95; do
     echo "Testing with slow start = ${SLOWSTART}..."
     
     # Clean output

@@ -1,0 +1,5 @@
+slowstart_fraction,time_seconds
+0.25,163
+0.50,239
+0.75,195
+0.95,166
