@@ -1,15 +1,14 @@
 #!/bin/bash
-# File: run_experiments.sh
+# File: run_experiments.sh (Query 4)
 
-# Make sure we're in the right directory
-cd /Q1
+cd /Q4
 
 # Configuration
 INPUT_CSV="/user/root/Data/train.csv"
-Q1_DIR="/user/root/Q1"
+Q4_DIR="/user/root/Q4"
 
 echo "=========================================="
-echo "Query 1: Performance Experiments"
+echo "Query 4: Performance Experiments"
 echo "=========================================="
 echo "This will take a while. Each experiment runs on the full dataset."
 echo ""
@@ -26,14 +25,14 @@ for NUM_REDUCERS in 1 2 4 6 8 12 16 24; do
     echo "Testing with ${NUM_REDUCERS} reducers..."
     
     # Clean output
-    hdfs dfs -rm -r -f ${Q1_DIR}/exp_reducers_${NUM_REDUCERS}
+    hdfs dfs -rm -r -f ${Q4_DIR}/exp_reducers_${NUM_REDUCERS}
     
     # Run job and time it
     START=$(date +%s)
-    hadoop jar PopularRoutesByMonth.jar PopularRoutesByMonth \
+    hadoop jar NightlifeSpotsByMonth.jar NightlifeSpotsByMonth \
         ${INPUT_CSV} \
-        ${Q1_DIR}/exp_reducers_${NUM_REDUCERS} \
-        ${NUM_REDUCERS} > /tmp/log_reducers_${NUM_REDUCERS}.txt 2>&1
+        ${Q4_DIR}/exp_reducers_${NUM_REDUCERS} \
+        ${NUM_REDUCERS} > /tmp/log_q4_reducers_${NUM_REDUCERS}.txt 2>&1
     EXIT_CODE=$?
     END=$(date +%s)
     DURATION=$((END - START))
@@ -42,7 +41,7 @@ for NUM_REDUCERS in 1 2 4 6 8 12 16 24; do
         echo "${NUM_REDUCERS},${DURATION}" >> reducer_experiment_results.csv
         echo "  ✓ Completed in ${DURATION} seconds"
     else
-        echo "  ✗ Failed! Check /tmp/log_reducers_${NUM_REDUCERS}.txt"
+        echo "  ✗ Failed! Check /tmp/log_q4_reducers_${NUM_REDUCERS}.txt"
     fi
 done
 
@@ -50,29 +49,33 @@ echo ""
 echo "Experiment 2: Varying Slow Start Parameter"
 echo "=========================================="
 
-for SLOWSTART in 0.05 0.25 0.50 0.75 0.80 0.95; do 
+for SLOWSTART in 0.05 0.25 0.50 0.75 0.80 0.95; do
     echo "Testing with slow start = ${SLOWSTART}..."
     
     # Clean output
-    hdfs dfs -rm -r -f ${Q1_DIR}/exp_slowstart_${SLOWSTART}
+    hdfs dfs -rm -r -f ${Q4_DIR}/exp_slowstart_${SLOWSTART}
     
-    # Run job with slow start parameter and time it
+    # Set slow start via environment variable
+    export HADOOP_CLIENT_OPTS="-Dmapreduce.job.reduce.slowstart.completedmaps=${SLOWSTART}"
+    
+    # Run job and time it
     START=$(date +%s)
-    hadoop jar PopularRoutesByMonth.jar PopularRoutesByMonth \
+    hadoop jar NightlifeSpotsByMonth.jar NightlifeSpotsByMonth \
         ${INPUT_CSV} \
-        ${Q1_DIR}/exp_slowstart_${SLOWSTART} \
-        12 \
-        -Dmapreduce.job.reduce.slowstart.completedmaps=${SLOWSTART} \
-        > /tmp/log_slowstart_${SLOWSTART}.txt 2>&1
+        ${Q4_DIR}/exp_slowstart_${SLOWSTART} \
+        12 > /tmp/log_q4_slowstart_${SLOWSTART}.txt 2>&1
     EXIT_CODE=$?
     END=$(date +%s)
     DURATION=$((END - START))
+    
+    # Clear the environment variable
+    unset HADOOP_CLIENT_OPTS
     
     if [ $EXIT_CODE -eq 0 ]; then
         echo "${SLOWSTART},${DURATION}" >> slowstart_experiment_results.csv
         echo "  ✓ Completed in ${DURATION} seconds"
     else
-        echo "  ✗ Failed! Check /tmp/log_slowstart_${SLOWSTART}.txt"
+        echo "  ✗ Failed! Check /tmp/log_q4_slowstart_${SLOWSTART}.txt"
     fi
 done
 
@@ -81,8 +84,8 @@ echo "=========================================="
 echo "Experiments completed!"
 echo "=========================================="
 echo "Results saved to:"
-echo "  - /Q1/reducer_experiment_results.csv"
-echo "  - /Q1/slowstart_experiment_results.csv"
+echo "  - /Q4/reducer_experiment_results.csv"
+echo "  - /Q4/slowstart_experiment_results.csv"
 echo ""
 echo "To generate plots, copy these CSV files to your local machine and run:"
 echo "  python3 plot_experiments.py"
