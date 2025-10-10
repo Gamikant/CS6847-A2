@@ -31,7 +31,7 @@
 ***
 This folder contains all necessary files required for your to perform a Map Reduce job for the that query of the assignment. You just need to follow the instructions provided by the `Instructions.md` tailored for that query folder.
 ***
-### Some spare commands I might need once in a while
+### Some spare commands you might need once in a while
 ***
 1. To delete an MR job output
     ```sh
